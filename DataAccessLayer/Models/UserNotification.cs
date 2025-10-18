@@ -9,21 +9,22 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Models
 {
+
     [PrimaryKey(nameof(HumanBaseEntityId), nameof(NotificationId))]
     public class UserNotification
     {
         public int HumanBaseEntityId { get; set; }
         [ForeignKey(nameof(HumanBaseEntityId))]
-       
-        public HumanBaseEntity User { get; set; }=null!;
+        public HumanBaseEntity User { get; set; } = null!;
 
         public int NotificationId { get; set; }
         [ForeignKey(nameof(NotificationId))]
-        //[InverseProperty(nameof(Notification.UserNotifications))]
-        public Notification notification { get; set; }=null!;
-
+        public Notification Notification { get; set; } = null!;
 
         public DateTime SentAt { get; set; } = DateTime.Now;
         public bool IsRead { get; set; } = false;
     }
+
 }
+
+

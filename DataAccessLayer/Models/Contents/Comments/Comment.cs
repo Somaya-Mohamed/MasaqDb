@@ -17,7 +17,7 @@ namespace DataAccessLayer.Models.Contents.Comments
 
         public int StudentIdFK { get; set; }
         [ForeignKey(nameof(StudentIdFK))]
-        [InverseProperty(nameof(Student.comments))]
+        [InverseProperty(nameof(Student.Comments))]
         public Student student { get; set; }
 
         public int LessonIdFK { get; set; }

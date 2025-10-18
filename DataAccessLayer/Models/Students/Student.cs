@@ -1,43 +1,29 @@
-﻿using DataAccessLayer.Models.Contents.Comments;
+﻿
+using DataAccessLayer.Models.Accounts;
+using DataAccessLayer.Models.Contents.Comments;
 using DataAccessLayer.Models.Levels;
 using DataAccessLayer.Models.Notifications;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccessLayer.Models.Students
 {
-    public class Student:HumanBaseEntity
+    public class Student : HumanBaseEntity
     {
-
+        [Required]
         public int Grade { get; set; }
 
-
-        [Phone]
-        public String PhoneNumber { get; set; } = null!;
-
-        [Phone]
-        public String ParentPhoneNumber { get; set; } = null!;
-        public int CreationBy { get; set; }
-        //public bool favorite { get; set; }  
-        public DateTime CreatedOn { get; set; }
-        public DateTime LastModified { get; set; }
+        [Phone, MaxLength(15)]
+        public string ParentPhoneNumber { get; set; } = null!;
 
 
-        public int levelFK { get; set; }
-        [ForeignKey(nameof(levelFK))]
-        [InverseProperty(nameof(Level.Students))]
-        public Level level { get; set; }
+        public int? Teacher_AccountId { get; set; }
+        [ForeignKey(nameof(Teacher_AccountId))]
+        public Account TeacherAccount { get; set; }
 
-        public ICollection<Notification> notifications { get; set; } = new HashSet<Notification>();
-
-        public ICollection<Comment> comments { get; set; } = new HashSet<Comment>();
-
-        public ICollection<StudentExam> studentExams { get; set; } = new HashSet<StudentExam>();
-        public ICollection<StudentLesson> studentLessons { get; set; } = new HashSet<StudentLesson>();
+        public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
+        public ICollection<StudentExam> StudentExams { get; set; } = new HashSet<StudentExam>();
+        public ICollection<StudentLesson> StudentLessons { get; set; } = new HashSet<StudentLesson>();
     }
 }

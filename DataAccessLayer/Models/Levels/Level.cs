@@ -20,7 +20,7 @@ namespace DataAccessLayer.Models.Levels
         #endregion
 
         #region One-to-Many relationship between students and Course
-        [InverseProperty(nameof(Student.level))]
+        [InverseProperty(nameof(Student.Level))]
         public ICollection<Student> Students { get; set; } = new HashSet<Student>();
         #endregion
     }

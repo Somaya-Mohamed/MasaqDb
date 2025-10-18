@@ -1,11 +1,7 @@
-﻿using DataAccessLayer.Models.Students;
+﻿
+using DataAccessLayer.Models.Students;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccessLayer.Data.Configration_classes
 {
@@ -13,12 +9,25 @@ namespace DataAccessLayer.Data.Configration_classes
     {
         public void Configure(EntityTypeBuilder<Student> builder)
         {
+            base.Configure(builder); // يطبق إعدادات HumanBaseEntity
 
-            
-            builder.Property(x => x.CreatedOn).HasDefaultValueSql("GETDATE()");
-            builder.Property(x => x.PhoneNumber).HasColumnType("nvarchar(15)");
-            builder.Property(x => x.ParentPhoneNumber).HasColumnType("nvarchar(15)");
-            base.Configure(builder);
+            builder.Property(x => x.Grade)
+                   .IsRequired();
+            builder.Property(x => x.ParentPhoneNumber)
+                   .HasColumnType("nvarchar(15)")
+                   .IsRequired();
+            builder.Property(x => x.AccountId)
+                   .IsRequired();
+            builder.Property(x => x.levelFK)
+                   .IsRequired();
+            builder.Property(x => x.Teacher_AccountId)
+                   .IsRequired(false); // Nullable عشان ON DELETE NO ACTION
+
+            // علاقة الطالب بالمعلم
+            builder.HasOne(s => s.TeacherAccount)
+                   .WithMany()
+                   .HasForeignKey(s => s.Teacher_AccountId)
+                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

@@ -22,13 +22,123 @@ namespace DataAccessLayer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DataAccessLayer.Models.Admin.Admin", b =>
+            modelBuilder.Entity("AccountRole", b =>
+                {
+                    b.Property<int>("AccountsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RolesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AccountsId", "RolesId");
+
+                    b.HasIndex("RolesId");
+
+                    b.ToTable("AccountRoles", (string)null);
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Models.Accounts.Account", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("FailedLoginAttempts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Accounts");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Models.Accounts.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Models.Accounts.UserProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId")
+                        .IsUnique();
+
+                    b.ToTable("UserProfiles");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Models.Admins.Admin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
 
                     b.Property<string>("FName")
                         .IsRequired()
@@ -37,19 +147,20 @@ namespace DataAccessLayer.Migrations
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("LastActive")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountId")
+                        .IsUnique();
 
                     b.ToTable("Admins");
                 });
@@ -70,7 +181,7 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
@@ -79,7 +190,9 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsPinned")
                         .HasColumnType("bit");
@@ -95,9 +208,14 @@ namespace DataAccessLayer.Migrations
                     b.Property<int>("LessonIdFK")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TeacherId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LessonIdFK");
+
+                    b.HasIndex("TeacherId");
 
                     b.ToTable("Announcements");
                 });
@@ -137,7 +255,7 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
@@ -145,7 +263,9 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("LastModifiedBy")
                         .HasColumnType("int");
@@ -167,7 +287,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("StudentIdFK");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.Contents.Courses.Course", b =>
@@ -182,12 +302,14 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("LastModifiedBy")
                         .HasColumnType("int");
@@ -223,7 +345,7 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
@@ -243,7 +365,9 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("LastModifiedBy")
                         .HasColumnType("int");
@@ -287,7 +411,7 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
@@ -301,7 +425,9 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("LastModifiedBy")
                         .HasColumnType("int");
@@ -342,7 +468,7 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
@@ -354,7 +480,9 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("LastModifiedBy")
                         .HasColumnType("int");
@@ -412,19 +540,28 @@ namespace DataAccessLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<string>("City")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
 
                     b.Property<string>("FName")
                         .IsRequired()
+                        .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Gender")
@@ -433,10 +570,13 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(10)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("LName")
                         .IsRequired()
+                        .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<DateTime>("LastActive")
@@ -444,19 +584,24 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("datetime2")
                         .HasComputedColumnSql("GETDATE()");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("int");
 
-                    b.Property<string>("email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<DateTime>("LastModifiedOn")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasComputedColumnSql("GETDATE()");
+
+                    b.Property<int?>("levelFK")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable((string)null);
+                    b.ToTable("HumanBaseEntity");
 
-                    b.UseTpcMappingStrategy();
+                    b.HasDiscriminator().HasValue("HumanBaseEntity");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.Levels.Level", b =>
@@ -475,12 +620,14 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("LastModifiedBy")
                         .HasColumnType("int");
@@ -511,50 +658,48 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Body")
                         .IsRequired()
+                        .HasMaxLength(600)
                         .HasColumnType("nvarchar(600)");
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime")
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Header")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("LastModifiedBy")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("LastModifiedOn")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasComputedColumnSql("GETDATE()");
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<DateTime>("SentAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("StudentFK")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TeacherFK")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentFK");
-
-                    b.HasIndex("TeacherFK");
-
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.StudentAnswer", b =>
@@ -580,7 +725,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("StudentAnswer");
+                    b.ToTable("StudentAnswers");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.StudentExam", b =>
@@ -615,7 +760,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("StudentExam");
+                    b.ToTable("StudentExams");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.StudentLesson", b =>
@@ -630,7 +775,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("StudentLesson");
+                    b.ToTable("StudentLessons");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.UserNotification", b =>
@@ -651,48 +796,83 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("NotificationId");
 
-                    b.ToTable("UserNotification");
+                    b.ToTable("UserNotifications");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.Students.Student", b =>
                 {
                     b.HasBaseType("DataAccessLayer.Models.HumanBaseEntity");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int>("CreationBy")
-                        .HasColumnType("int");
-
                     b.Property<int>("Grade")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("ParentPhoneNumber")
                         .IsRequired()
+                        .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<int>("levelFK")
+                    b.Property<int?>("Teacher_AccountId")
                         .HasColumnType("int");
+
+                    b.HasIndex("AccountId")
+                        .IsUnique()
+                        .HasFilter("[AccountId] IS NOT NULL");
+
+                    b.HasIndex("Teacher_AccountId");
 
                     b.HasIndex("levelFK");
 
-                    b.ToTable("Students", (string)null);
+                    b.HasDiscriminator().HasValue("Student");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.Teachers.Teacher", b =>
                 {
                     b.HasBaseType("DataAccessLayer.Models.HumanBaseEntity");
 
-                    b.ToTable("Teachers", (string)null);
+                    b.HasIndex("AccountId")
+                        .IsUnique()
+                        .HasFilter("[AccountId] IS NOT NULL");
+
+                    b.HasIndex("levelFK");
+
+                    b.HasDiscriminator().HasValue("Teacher");
+                });
+
+            modelBuilder.Entity("AccountRole", b =>
+                {
+                    b.HasOne("DataAccessLayer.Models.Accounts.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Models.Accounts.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Models.Accounts.UserProfile", b =>
+                {
+                    b.HasOne("DataAccessLayer.Models.Accounts.Account", "Account")
+                        .WithOne("UserProfile")
+                        .HasForeignKey("DataAccessLayer.Models.Accounts.UserProfile", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Models.Admins.Admin", b =>
+                {
+                    b.HasOne("DataAccessLayer.Models.Accounts.Account", "Account")
+                        .WithOne("Admin")
+                        .HasForeignKey("DataAccessLayer.Models.Admins.Admin", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.Announcements.Announcement", b =>
@@ -702,6 +882,10 @@ namespace DataAccessLayer.Migrations
                         .HasForeignKey("LessonIdFK")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Models.Teachers.Teacher", null)
+                        .WithMany("Announcements")
+                        .HasForeignKey("TeacherId");
 
                     b.Navigation("lesson");
                 });
@@ -715,7 +899,7 @@ namespace DataAccessLayer.Migrations
                         .IsRequired();
 
                     b.HasOne("DataAccessLayer.Models.Students.Student", "student")
-                        .WithMany("comments")
+                        .WithMany("Comments")
                         .HasForeignKey("StudentIdFK")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -778,25 +962,6 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Models.Notifications.Notification", b =>
-                {
-                    b.HasOne("DataAccessLayer.Models.Students.Student", "student")
-                        .WithMany("notifications")
-                        .HasForeignKey("StudentFK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccessLayer.Models.Teachers.Teacher", "teacher")
-                        .WithMany("notifications")
-                        .HasForeignKey("TeacherFK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("student");
-
-                    b.Navigation("teacher");
-                });
-
             modelBuilder.Entity("DataAccessLayer.Models.StudentAnswer", b =>
                 {
                     b.HasOne("DataAccessLayer.Models.Contents.Questions.QuestionOptions", "answer")
@@ -812,7 +977,7 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("DataAccessLayer.Models.StudentExam", "StudentExam")
                         .WithMany("Answers")
                         .HasForeignKey("StudentExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Question");
@@ -831,7 +996,7 @@ namespace DataAccessLayer.Migrations
                         .IsRequired();
 
                     b.HasOne("DataAccessLayer.Models.Students.Student", "Student")
-                        .WithMany("studentExams")
+                        .WithMany("StudentExams")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -850,7 +1015,7 @@ namespace DataAccessLayer.Migrations
                         .IsRequired();
 
                     b.HasOne("DataAccessLayer.Models.Students.Student", "Student")
-                        .WithMany("studentLessons")
+                        .WithMany("StudentLessons")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -868,26 +1033,69 @@ namespace DataAccessLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccessLayer.Models.Notifications.Notification", "notification")
-                        .WithMany()
+                    b.HasOne("DataAccessLayer.Models.Notifications.Notification", "Notification")
+                        .WithMany("UserNotifications")
                         .HasForeignKey("NotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Notification");
 
-                    b.Navigation("notification");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.Students.Student", b =>
                 {
-                    b.HasOne("DataAccessLayer.Models.Levels.Level", "level")
+                    b.HasOne("DataAccessLayer.Models.Accounts.Account", "Account")
+                        .WithOne("Student")
+                        .HasForeignKey("DataAccessLayer.Models.Students.Student", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DataAccessLayer.Models.Accounts.Account", "TeacherAccount")
+                        .WithMany()
+                        .HasForeignKey("Teacher_AccountId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("DataAccessLayer.Models.Levels.Level", "Level")
                         .WithMany("Students")
-                        .HasForeignKey("levelFK")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("levelFK");
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Level");
+
+                    b.Navigation("TeacherAccount");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Models.Teachers.Teacher", b =>
+                {
+                    b.HasOne("DataAccessLayer.Models.Accounts.Account", "Account")
+                        .WithOne("Teacher")
+                        .HasForeignKey("DataAccessLayer.Models.Teachers.Teacher", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DataAccessLayer.Models.Levels.Level", "Level")
+                        .WithMany()
+                        .HasForeignKey("levelFK");
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Level");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Models.Accounts.Account", b =>
+                {
+                    b.Navigation("Admin")
                         .IsRequired();
 
-                    b.Navigation("level");
+                    b.Navigation("Student")
+                        .IsRequired();
+
+                    b.Navigation("Teacher")
+                        .IsRequired();
+
+                    b.Navigation("UserProfile")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.Contents.Courses.Course", b =>
@@ -937,6 +1145,11 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Students");
                 });
 
+            modelBuilder.Entity("DataAccessLayer.Models.Notifications.Notification", b =>
+                {
+                    b.Navigation("UserNotifications");
+                });
+
             modelBuilder.Entity("DataAccessLayer.Models.StudentExam", b =>
                 {
                     b.Navigation("Answers");
@@ -944,18 +1157,16 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Models.Students.Student", b =>
                 {
-                    b.Navigation("comments");
+                    b.Navigation("Comments");
 
-                    b.Navigation("notifications");
+                    b.Navigation("StudentExams");
 
-                    b.Navigation("studentExams");
-
-                    b.Navigation("studentLessons");
+                    b.Navigation("StudentLessons");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.Teachers.Teacher", b =>
                 {
-                    b.Navigation("notifications");
+                    b.Navigation("Announcements");
                 });
 #pragma warning restore 612, 618
         }
